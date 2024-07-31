@@ -1,19 +1,25 @@
 [project]
 name = 'poll-counter'
-description = ''
-authors = []
+description = "A polling system smart contract"
+license = "MIT"
+authors = ["Samuel Okechukwu"]
 telemetry = true
 cache_dir = './.cache'
 requirements = []
+
 [contracts.counter]
 path = 'contracts/counter.clar'
-clarity_version = 2
-epoch = 2.5
+clarity_version = 2.1
+epoch = 2.1
+
 [repl.analysis]
 passes = ['check_checker']
 
 [repl.analysis.check_checker]
-strict = false
+strict = true
 trusted_sender = false
 trusted_caller = false
 callee_filter = false
+
+[network]
+name = "testnet"
