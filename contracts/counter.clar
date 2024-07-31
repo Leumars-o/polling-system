@@ -18,9 +18,15 @@
 (define-data-var trump-count uint u0)
 (define-data-var total-poll uint u0)
 
+;; data maps
+(define-map voters principal bool)
+
 ;; Public function to add a vote for Biden
 (define-public (add-poll-biden)
   (begin
+    ;; Check if the address has already Voted
+    (asserts! (is-none (map-get? voters tx-sender)) (err u401))
+
     ;; Check if 10 STX has been sent
     (asserts! (>= (stx-get-balance tx-sender) u10) (err u100))
 
@@ -31,14 +37,23 @@
     (var-set biden-count (+ (var-get biden-count) u1))
     (var-set total-poll (+ (var-get total-poll) u1))
 
+    ;; Mark this address as Voted
+    (map-set voters tx-sender true)
+
     ;; Return success status and updated balance
-    (ok (stx-get-balance tx-sender))
+    (ok {
+      message: "Thank you for voting! Your new balance is:",
+      balance: (stx-get-balance tx-sender)
+      })
   )
 )
 
 ;; Public function to add a vote for Trump
 (define-public (add-poll-trump)
   (begin
+    ;; Check if the address has already Voted
+    (asserts! (is-none (map-get? voters tx-sender)) (err u401))
+
     ;; Check if 10 STX has been sent
     (asserts! (>= (stx-get-balance tx-sender) u10) (err u100))
 
@@ -48,6 +63,9 @@
     ;; Increment the Trump count and total poll count
     (var-set trump-count (+ (var-get trump-count) u1))
     (var-set total-poll (+ (var-get total-poll) u1))
+
+    ;; Mark this address as Voted
+    (map-set voters tx-sender true)
     
     ;; Return success status and updated balance
     (ok {
