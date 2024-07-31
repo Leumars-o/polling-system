@@ -14,9 +14,10 @@ This Clarity smart contract implements a simple voting system for a hypothetical
 
 1. Vote for either Biden or Trump
 2. Each vote costs 10 STX
-3. Track individual vote counts for each candidate
-4. Track total vote count
-5. Retrieve vote counts (restricted to contract owner)
+3. Eaach address can only vote once
+4. Track individual vote counts for each candidate
+5. Track total vote count
+6. Retrieve vote counts (restricted to contract owner)
 
 ## Data Variables
 
@@ -24,6 +25,7 @@ This Clarity smart contract implements a simple voting system for a hypothetical
 - `biden-count`: Number of votes for Biden
 - `trump-count`: Number of votes for Trump
 - `total-poll`: Total number of votes cast
+- `voters` : Map to track which address have voted
 
 ## Public Functions
 
@@ -74,18 +76,19 @@ To interact with this contract, you need to have a Stacks wallet with at least 1
 1. Deploy the contract to the Stacks blockchain.
 2. To vote for Biden, call `add-poll-biden()` and send 10 STX.
 3. To vote for Trump, call `add-poll-trump()` and send 10 STX.
-4. The contract owner can check the total vote count by calling `get-poll-count()`.
-5. Anyone can check individual candidate vote counts using `get-poll-biden()` and `get-poll-trump()`.
+4. Each address can only vote once. Attempting to vote again will result in an error.
+5. The contract owner can check the total vote count by calling `get-poll-count()`.
+6. Anyone can check individual candidate vote counts using `get-poll-biden()` and `get-poll-trump()`.
 
 ## Security Considerations
 
 - Only the contract owner can retrieve the total vote count.
 - Each vote requires exactly 10 STX to be sent to the contract.
-- The contract does not implement any measures to prevent multiple votes from the same address.
+- Each address can only vote once, preventing multiple votes from the same address
 
 ## Future Improvements
 
-1. Implement a mechanism to prevent multiple votes from the same address.
+1. Implement a mechanism to allow vote changes within a certain timeframe.
 2. Add a function to withdraw STX from the contract (accessible only by the owner).
 3. Implement a time-bound voting period.
 4. Add more candidates or make the candidate list dynamic.
