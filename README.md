@@ -47,6 +47,18 @@ Allows a user to vote for Trump.
 - **Errors**:
   - `(err u100)` if the voter doesn't have enough STX
 
+### `withdraw-stx(amount: uint)`
+
+Allows the contract owner to withdraw STX from the contract.
+
+- **Caller**: Must be the contract owner
+- **Parameters**: 
+  - `amount`: The amount of STX to withdraw
+- **Returns**: The amount of STX withdrawn if successful
+- **Errors**:
+  - `(err u403)` if the caller is not the contract owner
+  - `(err u500)` if the contract doesn't have enough balance
+
 ## Read-Only Functions
 
 ### `get-poll-count()`
@@ -76,20 +88,24 @@ To interact with this contract, you need to have a Stacks wallet with at least 1
 1. Deploy the contract to the Stacks blockchain.
 2. To vote for Biden, call `add-poll-biden()` and send 10 STX.
 3. To vote for Trump, call `add-poll-trump()` and send 10 STX.
-4. Each address can only vote once. Attempting to vote again will result in an error.
-5. The contract owner can check the total vote count by calling `get-poll-count()`.
-6. Anyone can check individual candidate vote counts using `get-poll-biden()` and `get-poll-trump()`.
+4. To vote for Harris, call `add-poll-harris()` and send 10 STX.
+5. Each address can only vote once. Attempting to vote again will result in an error.
+6. The contract owner can check the vote counts by calling `get-poll-count()`, `get-poll-biden()` and `get-poll-trump()`.
+7. The contract owner can withdraw STX from the contract by calling `withdraw-stx()` with the desired amount.
+
 
 ## Security Considerations
 
 - Only the contract owner can retrieve the total vote count.
+- Only the contract owner can withdraw STX from the contract.
 - Each vote requires exactly 10 STX to be sent to the contract.
 - Each address can only vote once, preventing multiple votes from the same address
+- The contract checks if it has enough balance before allowing a withdrawal.
 
 ## Future Improvements
 
 1. Implement a mechanism to allow vote changes within a certain timeframe.
-2. Add a function to withdraw STX from the contract (accessible only by the owner).
+2. Implement a function to change the contract owner.
 3. Implement a time-bound voting period.
 4. Add more candidates or make the candidate list dynamic.
 
