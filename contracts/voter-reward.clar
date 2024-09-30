@@ -1,37 +1,14 @@
 
 ;; title: voter-reward
-;; version:
-;; summary:
-;; description:
+;; version: 1.0
+;; summary: A supporting contract for the voting system that implements a reward mechanism
+;; description: This contract allows voters to claim rewards based on their participation
 
 ;; traits
 ;;
 
 ;; token definitions
 ;;
-
-;; constants
-;;
-
-;; data vars
-;;
-
-;; data maps
-;;
-
-;; public functions
-;;
-
-;; read only functions
-;;
-
-;; private functions
-;;
-
-;; title: voter-reward
-;; version: 1.0
-;; summary: A supporting contract for the voting system that implements a reward mechanism
-;; description: This contract allows voters to claim rewards based on their participation
 
 ;; Constants
 (define-constant ERR-NOT-AUTHORIZED (err u403))
@@ -48,17 +25,22 @@
 ;; Maps
 (define-map claimed-rewards principal bool)
 
-;; Read from main contract
-(use-trait voting-trait .voting-contract.voting-trait)
+;; Define traits
+(define-trait voting-trait
+    (
+        (has-voted (principal) (response bool uint))
+    )
+)
 
 ;; Public functions
-
+;;
 ;; Claim reward for voting
-(define-public (claim-reward (voting-contract <voting-trait>))
-  (let (
-    (has-voted (contract-call? voting-contract has-voted tx-sender))
-    (has-claimed (default-to false (map-get? claimed-rewards tx-sender)))
-  )
+(define-public (claim-reward (voting-contract principal))
+  (let 
+    (
+        (has-voted (contract-call? voting-contract has-voted tx-sender))
+        (has-claimed (default-to false (map-get? claimed-rewards tx-sender)))
+    )
     (asserts! has-voted ERR-NOT-VOTED)
     (asserts! (not has-claimed) ERR-ALREADY-CLAIMED)
     (asserts! (>= (stx-get-balance (as-contract tx-sender)) (var-get reward-amount)) ERR-INSUFFICIENT-FUNDS)
@@ -82,7 +64,7 @@
 )
 
 ;; Set maximum reward amount
-(define-public (set-max-reward-amount)
+(define-public (set-max-reward-amount (new-max-amount uint))
     (begin
         (asserts! (is-eq tx-sender (var-get contract-owner)) ERR-NOT-AUTHORIZED)
         (asserts! (>= new-max-amount (var-get reward-amount)) ERR-INVALID-AMOUNT)
