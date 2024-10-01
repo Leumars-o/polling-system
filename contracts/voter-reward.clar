@@ -6,6 +6,13 @@
 
 ;; traits
 ;;
+(define-trait voting-trait
+    (
+        (has-voted (principal) (response bool uint))
+    )
+)
+;; use trait
+(use-trait voting-contract-trait .voting-trait)
 
 ;; token definitions
 ;;
@@ -25,20 +32,13 @@
 ;; Maps
 (define-map claimed-rewards principal bool)
 
-;; Define traits
-(define-trait voting-trait
-    (
-        (has-voted (principal) (response bool uint))
-    )
-)
-
 ;; Public functions
 ;;
 ;; Claim reward for voting
-(define-public (claim-reward (voting-contract principal))
+(define-public (claim-reward (voting-contract <voting-contract-trait>))
   (let 
     (
-        (has-voted (contract-call? voting-contract has-voted tx-sender))
+        (has-voted (unwrap! (contract-call? voting-contract has-voted tx-sender)))
         (has-claimed (default-to false (map-get? claimed-rewards tx-sender)))
     )
     (asserts! has-voted ERR-NOT-VOTED)
